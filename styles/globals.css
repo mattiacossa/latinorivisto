@@ -16,6 +16,81 @@ a {
   text-decoration: none;
 }
 
+
+/* App.css */
+.two-column-layout {
+  display: flex; /* Use flexbox to create a two-column layout */
+  padding-top: 20px;
+}
+
+
+.tooltip-text {
+  visibility: hidden;
+  width: 45%;
+  
+
+
+
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+
+
+.left-column {
+
+
+  flex: 1; /* Make the left column grow to take available space */
+  padding: 20px; /* Add padding for spacing */
+
+}
+
+.right-column {
+  padding: 10px;
+padding-left: 20px;
+border: solid 2px #5a5f5a;
+margin-right: 20px;
+  height: 200px;
+  flex: 1; /* Make the right column grow to take available space */
+  background-color: #D9D9D9; /* Example background color */
+  border-radius: 14px;
+}
+
+
+
+.fontgrande {
+  font-weight: 700;
+font-size: 40px;
+font-style: bold;
+}
+
+.container2{
+  display: flex;
+}
+
+.analisi {
+background-color: #EDAF97;
+width: fit-content;
+padding: 5px;
+padding-left: 20px;
+padding-right: 20px;
+border-radius: 10px;
+}
+
+
+.analisi2 {
+  margin-left: 10px;
+  background-color: #B4656F;
+  width: fit-content;
+  padding: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 10px;
+  }
+
 .qwerty {
   width: 12vw;
   margin-right: 3vw;
@@ -34,6 +109,12 @@ padding-top: 20px;
 
 margin-top: -8px;
 }
+
+
+.container {
+  display: flex;
+}
+
 
 
 .colore {
@@ -275,12 +356,36 @@ padding-right: 10px;
   padding-bottom: 20px;
       }
     
+
+      span {
+padding-right: 4px;
+    }
+
       .bordo  {
 
         
        border: solid 10px red;
             }
           
+
+
+
+      .bordosopra  {
+
+        
+padding-top: 15px;
+             }
+           
+
+            .ridotto  img {
+
+              margin: auto;
+             width: 40%;
+                   }
+
+
+          
+                   
           .gotopolly button {
 
         
