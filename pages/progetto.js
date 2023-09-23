@@ -1,6 +1,6 @@
 import React,{ useState, useEffect } from "react";
 import ContainerBlock from "../components/ContainerBlock";
-import Progetto from "../components/Projects";
+import Progetto from "../components/Analisi";
 import styles from "../styles/Home.module.css";
 
 

@@ -18,6 +18,11 @@
   margin-top: 20px;
 }
 
+.height {
+  height: 200px;
+}
+
+
 .loadingDots {
   display: flex;
 }

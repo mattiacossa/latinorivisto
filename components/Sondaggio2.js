@@ -4,13 +4,12 @@ import { RoughNotation, RoughNotationGroup } from "react-rough-notation";
 import { RainbowHighlight } from "./RainbowHighlight";
 import userData from "@constants/data";
 import { blue } from "tailwindcss/colors";
-import{useState, useRef, useEffect} from 'react'
+import{useState, useRef} from 'react'
 import {addDoc, collection} from 'firebase/firestore'
 import {db} from '../firebaseConfig'
 import Confetti from "react-confetti";
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
-import lottie from 'lottie-web'; // Import the Lottie library
 
 
 
@@ -18,29 +17,20 @@ import lottie from 'lottie-web'; // Import the Lottie library
 
 export default function FavouriteProjects() {
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [progress, setProgress] = useState(20);
+  const [progress, setProgress] = useState(0);
   const [correctAnswerChecked, setCorrectAnswerChecked] = useState(false);
   const [showTick, setShowTick] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
   const [avanti, setAvanti] = useState("fermo");
   const [isSubmitted, setIsSubmitted] = useState(false); // new state
   const [correctAnswer, setCorrectAnswer] = useState("yes");
-  const [lottieAnimation, setLottieAnimation] = useState(null); 
-  const [sliderValue, setSliderValue] = useState(1);
+
 
  
 const handleOptionChange = (value) => {
   setSelectedOption(value);
   setDomanda(value);
 }
-
-const progressBarStyles = {
-  width: `${progress}%`,
-  height: '8px',
-  backgroundColor: '#0b9f7f',
-  borderRadius: '4px',
-  transition: 'width 0.2s ease-in-out',
-};
 
 
 const [correctness, setCorrectness] = useState({
@@ -49,79 +39,117 @@ const [correctness, setCorrectness] = useState({
   "no2": false
 });
 
-
-const handleSliderChange = (event) => {
-  setSliderValue(parseInt(event.target.value));
-};
-
-
-useEffect(() => {
-  console.log('Slider value:', sliderValue); // Check slider value
-  // Load the Lottie animation based on the slider value
-  if (sliderValue === 1) {
-    console.log('Loading animation 1'); // Debug message
-    loadLottieAnimation('./an.json'); // Replace with the correct path
-  } else if (sliderValue === 2) {
-    console.log('Loading animation 2'); // Debug message
-    loadLottieAnimation('./an2.json'); // Replace with the correct path
-  } else if (sliderValue === 3) {
-    console.log('Loading animation 3'); // Debug message
-    loadLottieAnimation('./an3.json'); // Replace with the correct path
-  }
-}, [sliderValue]);
-
-const loadLottieAnimation = (animationPath) => {
-  if (lottieAnimation) {
-    lottieAnimation.destroy(); // Destroy the existing animation
-  }
-
-  const container = document.getElementById('lottieAnimation'); // Container element
-  const newAnimation = lottie.loadAnimation({
-    container,
-    renderer: 'svg',
-    loop: true,
-    autoplay: true,
-    path: animationPath,
-  });
-
-  setLottieAnimation(newAnimation); // Store the new animation instance
-};
-
-
-
+  const imageGroups = [
+    {
+      name: "Group A",
+      images1: [
+        userData.gruppounonotiziauno,
+        userData.gruppounonotiziadue,
+        userData.gruppounonotiziatre,
+      ],
+      images2: [
+        userData.gruppounonotiziaunobad,
+        userData.gruppounonotiziaduebad,
+        userData.gruppounonotiziatrebad,
+      ],
+    },
+    {
+      name: "Group B",
+      images1: [
+        userData.gruppoduenotiziauno,
+        userData.gruppoduenotiziadue,
+        userData.gruppoduenotiziatre,
+      ],
+      images2: [
+        userData.gruppoduenotiziaunobad,
+        userData.gruppoduenotiziaduebad,
+        userData.gruppoduenotiziatrebad,
+      ],
+    },
+  ];
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [step, setStep] = useState(1); // initial step is 1
   const [formData, setFormData] = useState({}); // initialize form data
   const [isCorrect, setIsCorrect] = useState(null);
-  const[prova,setProva] = useState('un');
 
-  const userCollectionRef = collection(db, "fisica")
+  
+  const[primo,setPrimo] = useState('3');
+  const[secondo,setSecondo] = useState('3');
+  const[terzo,setTerzo] = useState('3');
+  const[quarto,setQuarto] = useState('un');
+  const[quinto,setQuinto] = useState('un');
+  const[domanda,setDomanda] = useState('un');
+  const[domanda2,setDomanda2] = useState('un');
+  const[domanda3,setDomanda3] = useState('un');
+  const[domanda4,setDomanda4] = useState('un');
 
-
-  const [position, setPosition] = useState(0);
-  const [domanda, setDomanda] = useState(0);
   
 
+  const userCollectionRef = collection(db, "fisica")
+  const userCollectionRef2 = collection(db, "fisicamail")
+
+  const [position, setPosition] = useState(0);
+  
+  
+  const [selectedGroup, setSelectedGroup] = useState(imageGroups[0]);
+  const [selectedImages, setSelectedImages] = useState([
+    selectedGroup.images1[0],
+    selectedGroup.images1[1],
+  ]);
+  const [useAlternativeImages, setUseAlternativeImages] = useState(false);
+
+
+
+  const imageStyle = {
+    position: 'relative',
+    width: '15vw',
+    top: '50%',
+    left: position,
+    transform: 'translate(-50%, -50%)',
+    transition: 'left 0.5s ease-in-out',
+    zIndex: 2,
+  };
+  
+  
+  const imageStyle2 = {
+    position: 'relative',
+    width: '6vw',
+    top: '20%',
+    right: '0px',
+    transform: 'translate(-50%, -50%)',
+  
+  };
+
+
+  
+
+  
+
+  const handleSubmitavanti = (e) => {
+   
+        setStep(step + 1);
+    }
+
  
+    
     const handleSubmit20 = (event) => {
       event.preventDefault();
       setIsSubmitted(true); // mark the form as submitted
       if (avanti === "fermo") {
       if (domanda === "yes") {
         setIsCorrect(true);
-        setAvanti("true") 
+        setShowTick(true);
+       setAvanti("true") 
       } else {
         setIsCorrect(false);
+        setShowTick(false);
         setAvanti("true") 
     
       }
     } else {
       setStep(step + 1);
       setAvanti("fermo") 
-      setIsSubmitted(false);
-      setProgress(progress => progress + 25);
-      setIsCorrect(null);
   
     }
     }
@@ -132,13 +160,47 @@ const loadLottieAnimation = (animationPath) => {
 
 
   
+//SUBMIT TOALE
+  const handleSubmit =(event) => {
+  event.preventDefault(); // prevent page reload
+  setStep(step + 1); // increase the step
+  setShowConfetti(true);
+//PRIMA PARTE mia a caso, SECONDA Parte codice
+    setProgress(progress => progress + 25);
+}
 
 
 
+const handleCheckboxChange =(event) => {
+  setUseAlternativeImages(event.target.checked);
+}
+
+//SUBMIT TERZIARIO
+const handleSubmit3 =(event) => {
+  event.preventDefault(); // prevent page reload
+
+  setProgress(progress => 0);
+
+  const randomGroupIndex = Math.floor(Math.random() * imageGroups.length);
+  const randomGroup = imageGroups[randomGroupIndex];
+  setSelectedGroup(randomGroup);
+
+  const useAlternativeImages = terzo > 3;
+  const images = useAlternativeImages ? randomGroup.images2 : randomGroup.images1;
+  const randomImageIndex1 = Math.floor(Math.random() * images.length);
+  let randomImageIndex2 = Math.floor(Math.random() * images.length);
+  while (randomImageIndex2 === randomImageIndex1) {
+    randomImageIndex2 = Math.floor(Math.random() * images.length);
+  }
+  setSelectedImages([images[randomImageIndex1], images[randomImageIndex2]]);
+  setUseAlternativeImages(useAlternativeImages);
 
 
+  setStep(step + 1); // increase the step
+}
 
 
+//SUBMIT SECONDARIO 
 const handleSubmit2 =(event) => {
   setProgress(progress => progress + 25);
 
@@ -153,9 +215,54 @@ const handleSubmit2 =(event) => {
 
 
 const handleSubmit6 =(event) => {
+
+
   event.preventDefault(); // prevent page reload
   setStep(step + 1); // increase the step
+
 }
+
+
+/////QUIIIII////////
+const handleSubmit4 =(event) => {
+
+  event.preventDefault(); // prevent page reload
+  setStep(step + 1); // increase the step
+  
+  setProgress(progress => progress + 15);
+
+}
+
+
+const handleSubmit5 =(event) => {
+
+  event.preventDefault(); // prevent page reload
+  setStep(step + 1); // increase the step
+  setShowConfetti(true);
+  setProgress(progress => progress + 10);
+    
+
+
+    addDoc(userCollectionRef2, {
+      primo:primo,
+      secondo:secondo,
+      terzo:terzo,
+      domanda:domanda,
+      gruppo:selectedGroup.name,
+      domanda2: domanda2,
+      quarto:quarto,
+      quinto:quinto,
+      domanda3:domanda3,
+      domanda4:domanda4,
+    
+    })
+    
+}
+
+
+
+
+
 
 
 
@@ -170,7 +277,10 @@ const handleSubmit6 =(event) => {
 <div>
 
 
-  
+    <div className="progress-bar-container">
+      <progress value={progress} max="100"></progress>
+    </div>
+
 
         <header className="flex-row md:flex-row justify-between items-center lg:my-0">
       
@@ -201,13 +311,13 @@ const handleSubmit6 =(event) => {
 
     <div className="complete containerr largo">
       
-          <img src={userData.attrito} alt="avatar" className="ridotto bordo" />
+          <img src={userData.attrito} alt="avatar" className="ridotto" />
           </div>
 
 
 
       </div>
-      <div className="bordosinistro spazioinalto">
+      <div className="bordosinistro">
         <p className=" leading-loose text-3xl md:text-4xl font-semibold text-gray-800">
           È tutta logica
         </p>
@@ -219,7 +329,7 @@ const handleSubmit6 =(event) => {
           In questo corso esplorerai le basi fondamentali della fisica e i principi dell'ingegneria attraverso enigmi e giochi.
 <br></br>
 <br></br>
-          Gli enigmi di questo capitolo si concentrano su massa, forza peso e forza opprimente (attrito).
+          Gli enigmi di questo capitolo si concentrano su forza attrito e componenti della forza attrito
           <br></br>
           <br></br>
           
@@ -236,316 +346,7 @@ const handleSubmit6 =(event) => {
 )}
 
 
-
-
-
-
-
 {step === 2 && (
-  
-  <form onSubmit={handleSubmit20}>
-  <div className="containerr altezzamassima">
-    <div className="image-container immaginesecondo">
-
-
-
-  <div className="complete containerr largo">
-  <div className="image-container immaginesecondo">
-  <div className="lottie-container" id="lottieAnimation"></div>
-</div>
-
-
-<div className="slider-container">
-  <input
-    type="range"
-    min="1"
-    max="3"
-    value={sliderValue}
-    onChange={handleSliderChange}
-  />
-</div>
-
-
-       
-        </div>
-
-
-
-    </div>
-
-    
-  <div className="bordosinistro">
-    <div className="myriam">
-      <div className="progress-bar" style={progressBarStyles}></div>
-   </div>
-
-
-
-<div className="bordosuperiore">
-        <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2 ">Partiamo dalle basi:</label>
-        <div className="mt-3 grigio">
-          <div className="container">
-            <p>
-              <label className="grande textt block3 font-medium text-sm text-gray-800 mb-2" style={{lineHeight: "25px"}}>
-                Chi è il misterioso personaggio che sulla terra ha una massa di 80 kg ma un peso di 130 N?
-
-              </label>
-            </p>
-          </div>
-          <div className="radio-buttons">
-            <div className="radio-button">
-                        <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="yes" name="climate-articles" value="yes" 
-                      onChange={() => {
-                        setDomanda("yes");
-                        setSelectedOption("yes");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["yes"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "yes" ? 'selected' : ''}`}></span>
-                Mario, l’astronauta
-              </label>
-            </div>
-
-            <div className="radio-button"> 
-            <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="no1" name="climate-articles" value="no1" 
-                      onChange={() => {
-                        setDomanda("no1");
-                        setSelectedOption("no1");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["no1"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "no1" ? 'selected' : ''}`}></span>
-                Luigi, il nuotatore
-              </label>
-            </div>
-
-            <div className="radio-button"> 
-            <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="no2" name="climate-articles" value="no2" 
-                      onChange={() => {
-                        setDomanda("no2");
-                        setSelectedOption("no2");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["no2"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "no2" ? 'selected' : ''}`}></span>
-                Beppe, il capotreno
-              </label>
-            </div>
-              </div>
-          </div>
-
-          <div className="tasto bordosuperiore">
-            <div>
-              <button type="submit" className="bottonesecondario">Avanti</button>
-            </div>
-
-            {isCorrect !== null && (
-              <div className="mt-3 marginesinistro">
-                <p>{isCorrect ? "Giusto 🎉" : "Sbagliato :("}</p>
-              </div>
-            )}
-          </div>
-        </div>
-        </div>
-        </div>
-    
-      </form>
- 
-  )}
-
-
-
-{step === 3 && (
-  
-  <form onSubmit={handleSubmit2}>
-  <div className="containerr altezzamassima">
-    <div className="image-container immaginesecondo">
-
-
-
-  <div className="complete containerr largo">
-    
-        <img src={userData.attrito} alt="avatar" className="ridotto" />
-        </div>
-
-
-
-    </div>
-
-    
-  <div className="bordosinistro">
-<div className="myriam">
- 
-      <div className="progress-bar" style={progressBarStyles}></div>
-
-    </div>
-
-
-
-<div className="bordosuperiore">
-        <div className="mt-3">
-          <div className="container">
-          
-            <p
-          className="bordoalto leading-loose text-1xl md:text-1xl text-gray-800"
-          style={{lineHeight: "25px"}} >
-       La risposta corretta è Mario, l’astronauta. Ma partiamo dalle basi: 
-       <br></br><br></br>
-MASSA e FORZA PESO (chiamato “peso” per semplicità) sono due grandezze fisiche diverse.
-
-Immagina di sollevare una palla da calcio e una palla di piume, entrambe con stesse dimensioni. Scoprirai che la palla da calcio è molto più pesante della palla di piume. 
-
-<br></br>
-<br></br> 
-
-Questo perché la palla da calcio ha MASSA maggiore della palla di piume. La massa è quanto “materiale” c’è dentro un oggetto. LA MASSA È UNA PROPRIETÀ INTRINSECA DELL’OGGETTO ED È SEMPRE COSTANTE, QUALSIASI SIA IL PIANETA.
-
-<br></br> 
-<br></br>
-
- Pertanto Mario — l’astronauta — ha stessa massa sia sulla terra che sulla luna poiché la quantità di materiale che compone il suo corpo è uguale, INDIPENDENTEMENTE DA DOVE SI TROVI. 
-         
-     
-
-            </p>
-          </div>
-
-          </div>
-
-          <div className="tasto bordosuperiore">
-            <div>
-              <button type="submit" className="bottonesecondario">Avanti</button>
-            </div>
-
-         
-          </div>
-        </div>
-        </div>
-        </div>
-    
-      </form>
- 
-  )}
-
-
-
-
- 
-            
-
-
-
-
-
-
-{step === 4 && (
-  
-  <form onSubmit={handleSubmit20}>
-  <div className="containerr altezzamassima">
-    <div className="image-container immaginesecondo">
-
-
-
-  <div className="complete containerr largo">
-    
-        <img src={userData.attrito} alt="avatar" className="ridotto" />
-        </div>
-
-
-
-    </div>
-
-
-
-
-  <div className="bordosinistro">
-   
-        <div className="mt-3 grigio">
-          <div className="container">
-            <p>
-              <label className="leading-loose  text-1xl md:text-1xl text-gray-800 bordospaziatore textt block3  text-gray-700 mb-2"
-              style={{lineHeight: "25px"}}>
-                
-          
-Il capitanato Mario è un audace astronauta che si avventura nello spazio alla ricerca di avventure intergalattiche. Un giorno, mentre si trova su un pianeta molto lontano, il Capitano nota un oggetto misterioso che galleggia nell’aria. Il Capitano si avvicina, afferma l’oggetto e scopre che è una sfera blu scintillante. 
-
-
-              </label>
-            </p>
-          </div>
-          <div className="radio-buttons">
-            <div className="radio-button">
-                        <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="yes" name="climate-articles" value="yes" 
-                      onChange={() => {
-                        setDomanda("yes");
-                        setSelectedOption("yes");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["yes"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "yes" ? 'selected' : ''}`}></span>
-              Il capitano ha aumentato la sua massa
-              </label>
-            </div>
-
-            <div className="radio-button"> 
-            <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="no1" name="climate-articles" value="no1" 
-                      onChange={() => {
-                        setDomanda("no1");
-                        setSelectedOption("no1");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["no1"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "no1" ? 'selected' : ''}`}></span>
-                Il capitano ha aumentato il suo peso 
-              </label>
-            </div>
-
-            <div className="radio-button"> 
-            <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="no2" name="climate-articles" value="no2" 
-                      onChange={() => {
-                        setDomanda("no2");
-                        setSelectedOption("no2");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["no2"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "no2" ? 'selected' : ''}`}></span>
-                Il capitano ha aumentato sia la sua massa che il suo peso 
-              </label>
-            </div>
-          </div>
-
-          <div className="tasto">
-            <div className="">
-              <button type="submit" className="bottonesecondario">Avanti</button>
-            </div>
-
-            {isCorrect !== null && (
-              <div className="mt-3 marginesinistro">
-                <p>{isCorrect ? "Giusto 🎉" : "Sbagliato :("}</p>
-              </div>
-            )}
-          </div>
-        </div>
-        </div>
-        </div>
-
-      </form>
-
-  )}
-
-{step === 5 && (
   <form onSubmit={handleSubmit6}>
     <div className="containerr altezzamassima">
       <div className="image-container immaginesecondo">
@@ -563,27 +364,296 @@ Il capitanato Mario è un audace astronauta che si avventura nello spazio alla r
       <div className="bordosinistro">
      
 
-      <p className="bordoalto leading-loose text-1xl md:text-1xl text-gray-800 bordospaziatore grigio" style={{lineHeight: "25px"}} >
-La risposta corretta è: il capitano ha aumentato sia la sua massa che il suo peso. Capiamo perché partendo ancora una volta dalle basi: secondo la seconda legge di Newton (imparala a memoria, è alla base di tutta la fisica), la forza esercitata su un corpo equivale al prodotto (x) tra accelerazione e massa. 
+        <p
+          className="bordoalto leading-loose text-1xl md:text-1xl text-gray-800 bordospaziatore grigio"
+          style={{lineHeight: "25px"}} >
+Ora che hai una idea sulla differenza tra massa e peso (è fondamentale) passiamo alla forza di attrito. 
+
+Più un mobile è pesante, più sarà difficile spostarlo. È più facile scivolare sul ghiaccio che sul cemento. Questo perché l’attrito cambia in queste situazioni. 
+
+L’attrito è definito come LA FORZA che si oppone allo spostamento. Anche la superficie più liscia nel mondo, a livello microscopico, presenta delle increspature: lo sfregamento tra due superfici è quindi “ostacolato”.
 
 
-<BlockMath>
-  {'Forza = massa \\times accelerazione'}
-</BlockMath>
+Più un mobile è pesante, più fatica (ossia forza) farai: questo perché la forza attrito DIPENDE DAL PESO DELL’OGGETTO. Per semplificare la teoria consideriamo un mobile sulla terra (con accelerazione 10 m/s2).       
+        </p>
 
-
-Ogni pianeta ha la sua accelerazione (detta gravitazionale): la terra ha accelerazione 9.81 m/s&#178; (impara questo valore che è fondamentale, è costante, non cambia nel tempo e non dipende dal corpo considerato). La luna ha invece accelerazione di circa 1 m/s&#178;.
-
-
-Di conseguenza, per determinare la forza peso esercitata su un corpo, è necessario sapere la sua massa e l’accelerazione del pianeta su cui si trova. 
-
-</p>
-        <button type="submit" className="bottoneprimario">Avanti</button>
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
       </div>
     </div>
   </form>
 )}
+
+
+
+{step === 3 && (
+  
+  <div className="principale">
+    <form onSubmit={handleSubmit20}>
+    <div className="containerr altezzamassima">
+  <div className="image-container immaginesecondo">
+
+    <div className="complete containerr largo">
       
+        <img src={userData.attrito} alt="avatar" className="ridotto" />
+      </div>
+
+  </div>
+
+  <div className="bordosinistro">
+        <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">Partiamo dalle basi:</label>
+        <div className="mt-3 grigio">
+          <div className="container">
+            <p>
+              <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">
+              Il mobile ha massa 200 kg, la sua forza peso è: 
+
+              </label>
+            </p>
+          </div>
+          <div className="radio-buttons">
+            <div className="radio-button">
+                        <label className=" grande font-medium text-sm text-gray-700">
+                <input type="radio" className="hidden" id="yes" name="climate-articles" value="yes" 
+                      onChange={() => {
+                        setDomanda("yes");
+                        setSelectedOption("yes");
+                      }}
+                      disabled={isSubmitted}
+                />
+                <span className={`result-indicator ${isSubmitted ? (correctness["yes"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
+                <span className={`custom-radio ${selectedOption === "yes" ? 'selected' : ''}`}></span>
+                2000 N
+              </label>
+            </div>
+
+            <div className="radio-button"> 
+            <label className=" grande font-medium text-sm text-gray-700">
+                <input type="radio" className="hidden" id="no1" name="climate-articles" value="no1" 
+                      onChange={() => {
+                        setDomanda("no1");
+                        setSelectedOption("no1");
+                      }}
+                      disabled={isSubmitted}
+                />
+                <span className={`result-indicator ${isSubmitted ? (correctness["no1"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
+                <span className={`custom-radio ${selectedOption === "no1" ? 'selected' : ''}`}></span>
+                200 N
+              </label>
+            </div>
+
+            <div className="radio-button"> 
+            <label className=" grande font-medium text-sm text-gray-700">
+                <input type="radio" className="hidden" id="no2" name="climate-articles" value="no2" 
+                      onChange={() => {
+                        setDomanda("no2");
+                        setSelectedOption("no2");
+                      }}
+                      disabled={isSubmitted}
+                />
+                <span className={`result-indicator ${isSubmitted ? (correctness["no2"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
+                <span className={`custom-radio ${selectedOption === "no2" ? 'selected' : ''}`}></span>
+                200 KG 
+              </label>
+            </div>
+          </div>
+
+          <div className="tasto">
+            <div className="space">
+              <button type="submit" className="bottonesecondario">Avanti</button>
+            </div>
+
+            {isCorrect !== null && (
+              <div className="mt-3 marginesinistro">
+                <p>{isCorrect ? "Giusto 🎉" : "Sbagliato :("}</p>
+              </div>
+            )}
+          </div>
+        </div>
+        </div>
+        </div>
+      </form>
+    </div>
+  )}
+
+
+
+
+
+ 
+            
+{step === 4 && (
+  <form onSubmit={handleSubmit6}>
+    <div className="containerr altezzamassima">
+      <div className="image-container immaginesecondo">
+
+
+
+    <div className="complete containerr largo">
+      
+          <img src={userData.attrito} alt="avatar" className="ridotto" />
+          </div>
+
+
+
+      </div>
+      <div className="bordosinistro">
+     
+
+        <p
+          className="bordoalto leading-loose text-1xl md:text-1xl text-gray-800 bordospaziatore grigio"
+          style={{lineHeight: "25px"}} >
+Sappiamo che Forza = massa x accelerazione. Quindi FORZA = 200 X 10 = 2000N 
+
+
+Ogni superficie ha un coefficiente di attrito: è un numero ed è costante da superficie a superficie (e ti viene sempre fornito in verifica).
+Per capirci: 
+
+Il legno ha coefficiente di attrito 0,5; il rame 0,5; il vetro 1. 
+
+
+La forza di attrito è definita come FORZA PESO X COEFFICIENTE. 
+     
+        </p>
+
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
+      </div>
+    </div>
+  </form>
+)}
+
+
+
+
+
+{step === 5 && (
+  
+  <div className="principale">
+    <form onSubmit={handleSubmit20}>
+    <div className="containerr altezzamassima">
+  <div className="image-container immaginesecondo">
+
+    <div className="complete containerr largo">
+      
+        <img src={userData.attrito} alt="avatar" className="ridotto" />
+      </div>
+
+  </div>
+
+  <div className="bordosinistro">
+        <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">Partiamo dalle basi:</label>
+        <div className="mt-3 grigio">
+          <div className="container">
+            <p>
+              <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">
+           
+Il mobile che ha forza peso 2000 N, deve essere spostato su una superficie ruvida di coefficiente di attrito pari a 0,10. Calcola la forza che Luigi deve applicare per mettere in movimento il mobile (SE METTI IN MOTO UN CORPO VUOL DIRE CHE HAI VINTO LA FORZA DI ATTRITO). 
+
+              </label>
+            </p>
+          </div>
+          <div className="radio-buttons">
+            <div className="radio-button">
+                        <label className=" grande font-medium text-sm text-gray-700">
+                <input type="radio" className="hidden" id="yes" name="climate-articles" value="yes" 
+                      onChange={() => {
+                        setDomanda("yes");
+                        setSelectedOption("yes");
+                      }}
+                      disabled={isSubmitted}
+                />
+                <span className={`result-indicator ${isSubmitted ? (correctness["yes"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
+                <span className={`custom-radio ${selectedOption === "yes" ? 'selected' : ''}`}></span>
+                200 N
+              </label>
+            </div>
+
+            <div className="radio-button"> 
+            <label className=" grande font-medium text-sm text-gray-700">
+                <input type="radio" className="hidden" id="no1" name="climate-articles" value="no1" 
+                      onChange={() => {
+                        setDomanda("no1");
+                        setSelectedOption("no1");
+                      }}
+                      disabled={isSubmitted}
+                />
+                <span className={`result-indicator ${isSubmitted ? (correctness["no1"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
+                <span className={`custom-radio ${selectedOption === "no1" ? 'selected' : ''}`}></span>
+                2000 N
+              </label>
+            </div>
+
+            <div className="radio-button"> 
+            <label className=" grande font-medium text-sm text-gray-700">
+                <input type="radio" className="hidden" id="no2" name="climate-articles" value="no2" 
+                      onChange={() => {
+                        setDomanda("no2");
+                        setSelectedOption("no2");
+                      }}
+                      disabled={isSubmitted}
+                />
+                <span className={`result-indicator ${isSubmitted ? (correctness["no2"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
+                <span className={`custom-radio ${selectedOption === "no2" ? 'selected' : ''}`}></span>
+                20 N
+              </label>
+            </div>
+          </div>
+
+          <div className="tasto">
+            <div className="space">
+              <button type="submit" className="bottonesecondario">Avanti</button>
+            </div>
+
+            {isCorrect !== null && (
+              <div className="mt-3 marginesinistro">
+                <p>{isCorrect ? "Giusto 🎉" : "Sbagliato :("}</p>
+              </div>
+            )}
+          </div>
+        </div>
+        </div>
+        </div>
+      </form>
+    </div>
+  )}
+
+
+
+            
+{step === 4 && (
+  <form onSubmit={handleSubmit6}>
+    <div className="containerr altezzamassima">
+      <div className="image-container immaginesecondo">
+
+
+
+    <div className="complete containerr largo">
+      
+          <img src={userData.attrito} alt="avatar" className="ridotto" />
+          </div>
+
+
+
+      </div>
+      <div className="bordosinistro">
+     
+
+        <p
+          className="bordoalto leading-loose text-1xl md:text-1xl text-gray-800 bordospaziatore grigio"
+          style={{lineHeight: "25px"}} >
+Forza di attrito = forza peso x coefficient e
+
+Forza di attrito = 2000 x 0,10 
+
+200 N
+
+     
+        </p>
+
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
+      </div>
+    </div>
+  </form>
+)}
 
 
       {step === 6 && (
@@ -607,10 +677,8 @@ Di conseguenza, per determinare la forza peso esercitata su un corpo, è necessa
             <p>
               <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">
           
-              Mario — che pesa 80kg — quando è sulla terra risente di una forza peso di CIRCA. 
-              <BlockMath>
-  {'Forza = massa \\times accelerazione'}
-</BlockMath>
+              Mario — che pesa 80kg — quando è sulla terra risente di una forza peso di CIRCA (ricorda: FORZA = MASSA X ACCELERAZIONE). 
+
               </label>
             </p>
           </div>
@@ -662,7 +730,7 @@ Di conseguenza, per determinare la forza peso esercitata su un corpo, è necessa
           </div>
 
           <div className="tasto">
-            <div className="">
+            <div className="space">
               <button type="submit" className="bottonesecondario">Avanti</button>
             </div>
 
@@ -707,7 +775,7 @@ Di conseguenza, per determinare la forza peso esercitata su un corpo, è necessa
 
 
 </p>
-        <button type="submit" className="bottoneprimario">Avanti</button>
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
       </div>
     </div>
   </form>
@@ -736,7 +804,7 @@ Di conseguenza, per determinare la forza peso esercitata su un corpo, è necessa
             <p>
               <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">
           
-              Mario — che non è ingrassato nel mentre — si trova sulla Luna (con accelerazione di 2 m/s&#178. Qual ‘è la sua massa?
+              Mario — che non è ingrassato nel mentre — si trova sulla Luna (con accelerazione di 2 m/s2. Qual ‘è la sua massa?
 
               </label>
             </p>
@@ -789,7 +857,7 @@ Uguale che sulla terra
           </div>
 
           <div className="tasto">
-            <div className="">
+            <div className="space">
               <button type="submit" className="bottonesecondario">Avanti</button>
             </div>
 
@@ -833,7 +901,7 @@ La risposta corretta è uguale che sulla terra. Il quesito chiedeva la MASSA di 
 
 
 </p>
-        <button type="submit" className="bottoneprimario">Avanti</button>
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
       </div>
     </div>
   </form>
@@ -863,7 +931,7 @@ La risposta corretta è uguale che sulla terra. Il quesito chiedeva la MASSA di 
             <p>
               <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">
           
-              Mario — che ha sempre massa 80 kg — si trova sulla luna (con accelerazione di 2 ). Qual è la sua forza peso? 
+              Mario — che ha sempre massa 80 kg — si trova sulla luna (con accelerazione di 2 m/s2). Qual è la sua forza peso? 
 
 
               </label>
@@ -917,7 +985,7 @@ La risposta corretta è uguale che sulla terra. Il quesito chiedeva la MASSA di 
           </div>
 
           <div className="tasto">
-            <div className="">
+            <div className="space">
               <button type="submit" className="bottonesecondario">Avanti</button>
             </div>
 
@@ -964,7 +1032,7 @@ La risposta corretta è uguale che sulla terra. Il quesito chiedeva la MASSA di 
 Pertanto Mario, quando prende la sfera blu nello spazio, aumenta la quantità di materia che lo compone (la sua massa). Sapendo che FORZA = MASSA X ACCELERAZIONE ed essendo la massa aumentata, anche la forza aumenta. 
 
 </p>
-        <button type="submit" className="bottoneprimario">Avanti</button>
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
       </div>
     </div>
   </form>
@@ -1045,7 +1113,7 @@ Pertanto Mario, quando prende la sfera blu nello spazio, aumenta la quantità di
           </div>
 
           <div className="tasto">
-            <div className="">
+            <div className="space">
               <button type="submit" className="bottonesecondario">Avanti</button>
             </div>
 
@@ -1087,7 +1155,7 @@ Pertanto Mario, quando prende la sfera blu nello spazio, aumenta la quantità di
 La risposta corretta è la prima. LA MASSA NON DIPEDE DAL PIANETA, mentre il peso dipende dall’accelerazione gravitazione. Se il capitano si sposta su un pianeta con accelerazione inferriare e sapendo che F = M X A allora la forza è inferiore.
 
 </p>
-        <button type="submit" className="bottoneprimario">Avanti</button>
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
       </div>
     </div>
   </form>
@@ -1169,7 +1237,7 @@ La risposta corretta è la prima. LA MASSA NON DIPEDE DAL PIANETA, mentre il pes
           </div>
 
           <div className="tasto">
-            <div className="">
+            <div className="space">
               <button type="submit" className="bottonesecondario">Avanti</button>
             </div>
 
@@ -1211,104 +1279,11 @@ La risposta corretta è la prima. LA MASSA NON DIPEDE DAL PIANETA, mentre il pes
 La risposta corretta è la prima. LA MASSA NON DIPEDE DAL PIANETA, mentre il peso dipende dall’accelerazione gravitazione. Se il capitano si sposta su un pianeta con accelerazione inferriare e sapendo che F = M X A allora la forza è inferiore.
 
 </p>
-        <button type="submit" className="bottoneprimario">Avanti</button>
+        <button type="submit" className="bottoneprimario">Inizia il corso :)</button>
       </div>
     </div>
   </form>
 )}
-
-
-{step === 16 && (
-  
-  <div className="principale">
-    <form onSubmit={handleSubmit20}>
-    <div className="containerr altezzamassima">
-  <div className="image-container immaginesecondo">
-
-    <div className="complete containerr largo">
-      
-        <img src={userData.attrito} alt="avatar" className="ridotto" />
-      </div>
-
-  </div>
-
-  <div className="bordosinistro">
-   
-        <div className="mt-3 grigio">
-          <div className="container">
-            <p>
-              <label className="grande textt block3 font-medium text-sm text-gray-700 mb-2">
-          
-             Ritor
-              </label>
-            </p>
-          </div>
-          <div className="radio-buttons">
-            <div className="radio-button">
-                        <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="yes" name="climate-articles" value="yes" 
-                      onChange={() => {
-                        setDomanda("yes");
-                        setSelectedOption("yes");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["yes"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "yes" ? 'selected' : ''}`}></span>
-                La sua massa rimane la stessa, ma il suo peso diminuisce
-
-              </label>
-            </div>
-
-            <div className="radio-button"> 
-            <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="no1" name="climate-articles" value="no1" 
-                      onChange={() => {
-                        setDomanda("no1");
-                        setSelectedOption("no1");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["no1"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "no1" ? 'selected' : ''}`}></span>
-                La massa aumenterà, ma il peso diminuire
-              </label>
-            </div>
-
-            <div className="radio-button"> 
-            <label className=" grande font-medium text-sm text-gray-700">
-                <input type="radio" className="hidden" id="no2" name="climate-articles" value="no2" 
-                      onChange={() => {
-                        setDomanda("no2");
-                        setSelectedOption("no2");
-                      }}
-                      disabled={isSubmitted}
-                />
-                <span className={`result-indicator ${isSubmitted ? (correctness["no2"] ? 'correct' : 'incorrect') : 'unsubmitted'}`}></span>
-                <span className={`custom-radio ${selectedOption === "no2" ? 'selected' : ''}`}></span>
-                La sua massa diminuisce, ma il suo peso rimane lo stesso
-
-              </label>
-            </div>
-          </div>
-
-          <div className="tasto">
-            <div className="">
-              <button type="submit" className="bottonesecondario">Avanti</button>
-            </div>
-
-            {isCorrect !== null && (
-              <div className="mt-3 marginesinistro">
-                <p>{isCorrect ? "Giusto 🎉" : "Sbagliato :("}</p>
-              </div>
-            )}
-          </div>
-        </div>
-        </div>
-        </div>
-      </form>
-    </div>
-  )}
 
        
 

@@ -1,7 +1,7 @@
 const userData = {
   githubUsername: "mattiacossa",
-  name: "Polly, the climate thinker",
-  designation: "Una disuguaglianza insostenibile",
+  name: "Dafne",
+  designation: "Dafne",
   avatarUrl: "/avatar1.png",
   sfondoUrl: "/sfondo.png",
   avatarPiso: "/testwebsite.png",
@@ -9,6 +9,7 @@ const userData = {
   sfondo2Url: "/sfondo2.png",
   principale: "/sfondofinale1.png",
   pollo: "/pollo.png",
+  logoprincipale: "/immaginelogo.png",
   sopra: "/sfondoprogetto1.png",
   sfondopulcino: "/polloo.png",
   panno: "/panno.png",

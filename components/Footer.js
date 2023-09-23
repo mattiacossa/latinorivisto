@@ -16,7 +16,7 @@ export default function Footer() {
           
       <div className="flex flex-row ">
   <div>
-    <p>&copy; Polly, the climate thinker.</p>
+    <p>&copy; Dafne</p>
   </div>
   <div className="ml-auto">
     <p>

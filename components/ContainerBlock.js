@@ -8,8 +8,8 @@ export default function ContainerBlock({ children, ...customMeta }) {
   const router = useRouter();
 
   const meta = {
-    title: "Polly - Collect, analyze, study",
-    description: `Collect, analyze, study`,
+    title: "Dafne",
+    description: `Dafne`,
     image: "/pollo.png",
     type: "website",
     ...customMeta,
@@ -50,10 +50,10 @@ export default function ContainerBlock({ children, ...customMeta }) {
       </Head>
 
  
-      <main className="bg-[#eaf0ea] w-full">
+      <main className="bg-[] w-full">
         <Navbar />
         <div>{children}</div>
-        <Footer />
+    
       </main>
     </div>
   );
